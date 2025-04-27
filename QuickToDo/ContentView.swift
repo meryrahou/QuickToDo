@@ -81,18 +81,37 @@ struct ContentView: View {
             }
             .padding()
 
+            // List Section for Tasks
             List {
-                ForEach(viewModel.tasks) { task in
-                    HStack {
-                        Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
-                            .onTapGesture {
-                                viewModel.toggleTask(task)
-                            }
-                        Text(task.title)
-                            .strikethrough(task.isCompleted)
+                // Active Tasks Section
+                Section(header: Text("Active Tasks")) {
+                    ForEach(viewModel.tasks.filter { !$0.isCompleted }) { task in
+                        HStack {
+                            Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
+                                .onTapGesture {
+                                    viewModel.toggleTask(task)
+                                }
+                            Text(task.title)
+                                .strikethrough(task.isCompleted)
+                        }
                     }
+                    .onDelete(perform: viewModel.deleteTask)
                 }
-                .onDelete(perform: viewModel.deleteTask)
+
+                // Completed Tasks Section
+                Section(header: Text("Completed Tasks")) {
+                    ForEach(viewModel.tasks.filter { $0.isCompleted }) { task in
+                        HStack {
+                            Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
+                                .onTapGesture {
+                                    viewModel.toggleTask(task)
+                                }
+                            Text(task.title)
+                                .strikethrough(task.isCompleted)
+                        }
+                    }
+                    .onDelete(perform: viewModel.deleteTask)
+                }
             }
         }
         .frame(width: 300, height: 400)
