@@ -11,6 +11,7 @@ struct Task: Identifiable, Codable {
     var id = UUID()
     var title: String
     var isCompleted: Bool = false
+    var createdDate: Date // Added property to track the creation date
 }
 
 class TaskViewModel: ObservableObject {
@@ -27,7 +28,7 @@ class TaskViewModel: ObservableObject {
     }
 
     func addTask(title: String) {
-        let newTask = Task(title: title)
+        let newTask = Task(title: title, createdDate: Date()) // Set createdDate to the current date and time
         tasks.append(newTask)
     }
 
@@ -91,8 +92,13 @@ struct ContentView: View {
                                 .onTapGesture {
                                     viewModel.toggleTask(task)
                                 }
-                            Text(task.title)
-                                .strikethrough(task.isCompleted)
+                            VStack(alignment: .leading) {
+                                Text(task.title)
+                                    .strikethrough(task.isCompleted)
+                                Text("Created on: \(formattedDate(task.createdDate))")
+                                    .font(.footnote)
+                                    .foregroundColor(.gray)
+                            }
                         }
                     }
                     .onDelete(perform: viewModel.deleteTask)
@@ -106,8 +112,13 @@ struct ContentView: View {
                                 .onTapGesture {
                                     viewModel.toggleTask(task)
                                 }
-                            Text(task.title)
-                                .strikethrough(task.isCompleted)
+                            VStack(alignment: .leading) {
+                                Text(task.title)
+                                    .strikethrough(task.isCompleted)
+                                Text("Completed on: \(formattedDate(task.createdDate))")
+                                    .font(.footnote)
+                                    .foregroundColor(.gray)
+                            }
                         }
                     }
                     .onDelete(perform: viewModel.deleteTask)
@@ -116,5 +127,13 @@ struct ContentView: View {
         }
         .frame(width: 300, height: 400)
         .padding()
+    }
+    
+    // Helper function to format the date
+    func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 }
