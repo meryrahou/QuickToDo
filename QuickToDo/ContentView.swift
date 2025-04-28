@@ -38,8 +38,8 @@ class TaskViewModel: ObservableObject {
         }
     }
 
-    func deleteTask(at offsets: IndexSet) {
-        tasks.remove(atOffsets: offsets)
+    func deleteTask(task: Task) {
+        tasks.removeAll { $0.id == task.id }
     }
 
     private func saveTasks() {
@@ -55,6 +55,7 @@ class TaskViewModel: ObservableObject {
         }
     }
 }
+
 
 struct ContentView: View {
     @StateObject private var viewModel = TaskViewModel()
@@ -101,7 +102,12 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .onDelete(perform: viewModel.deleteTask)
+                    .onDelete { indexSet in
+                        for index in indexSet {
+                            let taskToDelete = viewModel.tasks.filter { !$0.isCompleted }[index]
+                            viewModel.deleteTask(task: taskToDelete)
+                        }
+                    }
                 }
 
                 // Completed Tasks Section
@@ -121,12 +127,18 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .onDelete(perform: viewModel.deleteTask)
+                    .onDelete { indexSet in
+                        for index in indexSet {
+                            let taskToDelete = viewModel.tasks.filter { $0.isCompleted }[index]
+                            viewModel.deleteTask(task: taskToDelete)
+                        }
+                    }
                 }
             }
+            .frame(maxHeight: .infinity) // Allow List to grow within available space
         }
-        .frame(width: 300, height: 400)
-        .padding()
+        .padding(.top, 10) // Adjusted padding for top section
+        .frame(width: 400, height: 400) // Main window size for the entire content view
     }
     
     // Helper function to format the date
@@ -137,3 +149,4 @@ struct ContentView: View {
         return formatter.string(from: date)
     }
 }
+
