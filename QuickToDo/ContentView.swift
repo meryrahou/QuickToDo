@@ -94,9 +94,7 @@ struct ContentView: View {
             // List Section for Tasks
             List {
                 // Active Tasks Section
-                Section(header:
-                    Text("Active Tasks")
-                ) {
+                Section(header: Text("Active Tasks")) {
                     ForEach(viewModel.tasks.filter { !$0.isCompleted }) { task in
                         HStack {
                             Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
@@ -119,8 +117,7 @@ struct ContentView: View {
                         }
                     }
                 }
-                .listRowInsets(EdgeInsets())
-
+                
                 // Completed Tasks Section
                 Section(header: Text("Completed Tasks")) {
                     ForEach(viewModel.tasks.filter { $0.isCompleted }) { task in
@@ -145,10 +142,10 @@ struct ContentView: View {
                         }
                     }
                 }
-                .listRowInsets(EdgeInsets())
             }
+            .frame(maxHeight: .infinity) // Allow List to grow within available space
         }
-        .padding()
+        .padding(.top, 10) // Adjusted padding for top section
         .background(VisualEffectBackground())
     }
     
@@ -160,4 +157,3 @@ struct ContentView: View {
         return formatter.string(from: date)
     }
 }
-
