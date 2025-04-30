@@ -18,38 +18,23 @@ struct QuickToDoApp: App {
     }
 }
 
-class AppDelegate: NSObject, NSApplicationDelegate {
-    var statusItem: NSStatusItem!
-    var popover: NSPopover!
 
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        popover = NSPopover()
-        popover.contentSize = NSSize(width: 400, height: 600)
-        popover.behavior = .transient
-        popover.contentViewController = NSHostingController(rootView: ContentView())
+struct VisualEffectBackground: NSViewRepresentable {
+    var material: NSVisualEffectView.Material = .popover
+    var blendingMode: NSVisualEffectView.BlendingMode = .behindWindow
+    var state: NSVisualEffectView.State = .active
 
-        
-        // Customize the popover appearance further
-        if let contentView = popover.contentViewController?.view {
-            contentView.wantsLayer = true
-            contentView.layer?.cornerRadius = 12  // Rounded corners for the popover content
-        }
-        
-        
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "checklist", accessibilityDescription: "QuickToDo")
-            button.action = #selector(togglePopover(_:))
-        }
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let effectView = NSVisualEffectView()
+        effectView.material = material
+        effectView.blendingMode = blendingMode
+        effectView.state = state
+        return effectView
     }
 
-    @objc func togglePopover(_ sender: AnyObject?) {
-        if let button = statusItem.button {
-            if popover.isShown {
-                popover.performClose(sender)
-            } else {
-                popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-            }
-        }
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        nsView.material = material
+        nsView.blendingMode = blendingMode
+        nsView.state = state
     }
 }
