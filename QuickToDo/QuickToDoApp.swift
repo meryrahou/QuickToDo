@@ -9,12 +9,12 @@ import SwiftUI
 
 @main
 struct QuickToDoApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
     var body: some Scene {
-        Settings {
-            EmptyView()
+        MenuBarExtra("QuickToDo", systemImage: "checklist") {
+            ContentView()
+                .frame(width: 400, height: 600)
         }
+        .menuBarExtraStyle(.window)
     }
 }
 
@@ -24,10 +24,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         popover = NSPopover()
-        popover.contentSize = NSSize(width: 300, height: 400)
+        popover.contentSize = NSSize(width: 400, height: 600)
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(rootView: ContentView())
 
+        
+        // Customize the popover appearance further
+        if let contentView = popover.contentViewController?.view {
+            contentView.wantsLayer = true
+            contentView.layer?.cornerRadius = 12  // Rounded corners for the popover content
+        }
+        
+        
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem.button {
             button.image = NSImage(systemSymbolName: "checklist", accessibilityDescription: "QuickToDo")

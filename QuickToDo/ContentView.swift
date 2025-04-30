@@ -29,12 +29,14 @@ class TaskViewModel: ObservableObject {
 
     func addTask(title: String) {
         let newTask = Task(title: title, createdDate: Date()) // Set createdDate to the current date and time
-        tasks.append(newTask)
+            tasks.insert(newTask, at: 0)
     }
 
     func toggleTask(_ task: Task) {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-            tasks[index].isCompleted.toggle()
+            withAnimation {
+                tasks[index].isCompleted.toggle()
+            }
         }
     }
 
@@ -70,8 +72,12 @@ struct ContentView: View {
                         newTaskTitle = ""
                     }
                 })
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-
+                .textFieldStyle(PlainTextFieldStyle())
+                .padding(6)
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(8)
+                .frame(height: 30)
+                
                 Button(action: {
                     if !newTaskTitle.isEmpty {
                         viewModel.addTask(title: newTaskTitle)
@@ -79,10 +85,12 @@ struct ContentView: View {
                     }
                 }) {
                     Image(systemName: "plus")
+                        .padding(6)
                 }
+                .buttonStyle(BorderlessButtonStyle())
             }
-            .padding()
-
+            .padding(.horizontal)
+            
             // List Section for Tasks
             List {
                 // Active Tasks Section
@@ -109,7 +117,7 @@ struct ContentView: View {
                         }
                     }
                 }
-
+                
                 // Completed Tasks Section
                 Section(header: Text("Completed Tasks")) {
                     ForEach(viewModel.tasks.filter { $0.isCompleted }) { task in
@@ -138,7 +146,6 @@ struct ContentView: View {
             .frame(maxHeight: .infinity) // Allow List to grow within available space
         }
         .padding(.top, 10) // Adjusted padding for top section
-        .frame(width: 400, height: 400) // Main window size for the entire content view
     }
     
     // Helper function to format the date
